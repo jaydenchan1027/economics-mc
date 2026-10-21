@@ -1,14 +1,20 @@
-# Economics MC Question Bank
+# Economics MC Practice Bank
 
-Mobile-friendly Economics CE / AL past-paper multiple-choice practice, covering Topics 3–9 (1,013 questions).
+Mobile-friendly Economics past-paper question bank covering **Topics 1–9** and **1,336 MC questions** from uploaded CE/AL PDFs.
 
-## Publish this website
+- Table of contents by Topic → I, II, III…
+- Exam-paper selection: CE / AL / Both
+- Instant answer marking using the included answer keys
+- Progress and mistake review saved in local browser storage
+- Source page scans for Topics 1–2, including shared charts and tables
+- Source scans for earlier Topics 3–9 preserved in `original.html`
 
-1. Upload the file `index.html` from [the prepared GitHub Pages package in ChatGPT](https://chatgpt.com/) to the **root of this repository**.
-2. In [Settings → Pages](https://github.com/jaydenchan1027/economics-mc/settings/pages), choose **Deploy from a branch**.
-3. Select branch **main**, directory **/(root)**, and **Save**.
-4. When GitHub Pages finishes deploying, open: https://jaydenchan1027.github.io/economics-mc/
+## GitHub Pages
 
-The published HTML contains embedded question data and previews, so it needs no other assets. User answers and progress are saved in each browser's local storage; they do not sync across devices unless manually exported and imported.
+https://jaydenchan1027.github.io/economics-mc/
 
-**Important:** The original past-paper material may be subject to third-party copyright. Review the right to publish before sharing the site publicly.
+This is a static GitHub Pages application. `index.html` loads the preserved previous version `original.html` and supplements the question bank with the `econ12_part_*.js` data segments. **Do not delete those supporting files.**
+
+Your progress is saved per browser and is not synchronized between devices. Export it before clearing browser data.
+
+**Rights:** The past-paper materials may be copyrighted. Confirm publication rights before making this site publicly accessible.

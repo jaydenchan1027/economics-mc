@@ -1,30 +1,44 @@
-<!DOCTYPE html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#09131c"><title>ECON • MC Practice Bank</title><style>html,body{margin:0;width:100%;height:100%;background:#09131c;overflow:hidden}iframe{border:0;display:block;width:100%;height:100%;height:100dvh;background:#09131c}#loading{position:fixed;inset:0;display:grid;place-items:center;background:#09131c;color:#a8d7cf;font:500 14px system-ui}</style></head>
-<body><div id="loading">Loading 1,336 Economics MC questions…</div><iframe id="mc" title="Economics MC Practice" allow="fullscreen"></iframe><script>
-(async function(){
-  const frame=document.getElementById('mc');
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#09131c"><title>ECON • MC Practice Bank</title>
+<style>
+html,body{margin:0;min-height:100%;background:#09131c;color:#e3eff0;font:15px system-ui}
+#startup{min-height:90vh;display:flex;align-items:center;justify-content:center;padding:1.5rem;text-align:center}
+#startup strong{display:block;font-size:1.05rem}
+#startup p{font-size:0.85rem;color:#a4b8c0}
+#startup a{display:block;margin-top:20px;color:#8bd2cc}
+</style></head><body>
+<div id="startup" role="status" aria-live="polite"><div>
+<strong>Loading Economics MC Question Bank…</strong>
+<p>Preparing all 1,336 questions for Topics 1–9.</p>
+<a href="original.html">Open the previous working version (Topics 3–9)</a>
+</div></div>
+<script>
+(async function bootstrap() {
+  'use strict';
+  const fallback=document.querySelector('#startup');
+  const fail=message=>{if(!fallback)return;fallback.querySelector('strong').textContent='The question bank could not be loaded.';fallback.querySelector('p').textContent=message};
+  const abort=new AbortController();
+  const deadline=setTimeout(()=>abort.abort(),30000);
   try {
-    const response=await fetch('original.html');
-    if(!response.ok)throw Error('Original question bank not found ('+response.status+')');
-    let html=await response.text();
-    const hook='/* ECON — responsive, offline, zero-dependency multiple-choice practice. */';
-    if(!html.includes(hook))throw Error('Question bank integration point missing');
-    html=html.replace(hook, '</script><script src="econ12_part_01.js"></script><script src="econ12_part_02.js"></script><script src="econ12_part_03.js"></script><script src="econ12_part_04.js"></script><script src="econ12_part_05.js"></script><script src="econ12_part_06.js"></script><script src="econ12_part_07.js"></script><script src="econ12_part_08.js"></script><script src="econ12_part_09.js"></script><script src="econ12_part_10.js"></script><script src="econ12_part_11.js"></script><script src="econ12_part_12.js"></script><script src="econ12_part_13.js"></script><script src="econ12_part_14.js"></script><script src="econ12_part_15.js"></script><script src="econ12_part_16.js"></script><script src="econ12_part_17.js"></script><script src="econ12_finalize.js"></script><script>'+hook);
-    html=html.replace('for(const topic of [3,4,5,6,7,8,9])', 'for(const topic of [1,2,3,4,5,6,7,8,9])');
-    html=html.replace('>7 topics</span>','>9 topics</span>');
-    html=html.replace('</head>','<style>.q-title{white-space:pre-wrap}.context-panel>div{white-space:pre-wrap}</style></head>');
-    frame.addEventListener('load',()=>{
-      document.getElementById('loading')?.remove();
-      try {
-        const inner=frame.contentDocument;
-        if(!inner)return;
-        const s=inner.createElement('script');s.src='shared-fix.js';inner.body.append(s);
-      }catch(e){console.warn('Reference overlay unavailable',e)}
-    },{once:true});
-    frame.srcdoc=html;
-  }catch(e){
-    document.getElementById('loading').textContent='Unable to load questions: '+e.message;
-    console.error(e);
-  }
+    const r=await fetch('original.html',{signal:abort.signal});
+    if(!r.ok)throw new Error('Website file not found ('+r.status+')');
+    let content=await r.text();
+    const marker='/* ECON — responsive, offline, zero-dependency multiple-choice practice. */';
+    if(!content.includes(marker))throw new Error('An app update changed the startup integration point');
+    const tags='<'+'/script>'+Array.from({length:17},(_,i)=>'<script src="econ12_part_'+String(i+1).padStart(2,'0')+'.js"></'+'script>').join('')+'<script src="econ12_finalize.js"></'+'script><script>';
+    content=content.replace(marker,tags+marker);
+    content=content.replace('for(const topic of [3,4,5,6,7,8,9])','for(const topic of [1,2,3,4,5,6,7,8,9])');
+    content=content.replace('>7 topics</span>','>9 topics</span>');
+    content=content.replace('</head>','<style>.q-title{white-space:pre-wrap}.context-panel>div{white-space:pre-wrap}</style></head>');
+    content=content.replace('</body>','<script src="shared-fix.js"></'+'script></body>');
+    document.open();
+    document.write(content);
+    document.close();
+  } catch(e) {
+    fail(e.name==='AbortError'?'Loading timed out. Check your connection and refresh.':e.message);
+    console.error('Economics MC startup failed:',e);
+  } finally {clearTimeout(deadline)}
 })();
 </script></body></html>

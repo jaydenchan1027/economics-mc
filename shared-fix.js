@@ -8,13 +8,8 @@ document.head.appendChild(style);
 let last='';
 function current(){
  const panel=document.querySelector('#main .question-panel');if(!panel)return null;
- const labels=[...panel.querySelectorAll('.question-meta .tag')].map(e=>e.textContent.trim());
- const t=labels.find(v=>/^TOPIC\s+\d+/.test(v));
- const num=panel.querySelector(':scope > .kicker')?.textContent.match(/QUESTION\s+(\d+)/)?.[1];
- if(!t||!num)return null;
- const topic=Number(t.match(/TOPIC\s+(\d+)/)[1]);
- const set=/SET\s+2/.test(t)?2:1;
- const q=keys.get(topic+':'+set+':'+Number(num));return q?{q,panel}:null;
+ const q=bank.questions.find(q=>q.id===panel.dataset.questionId);
+ return q?{q,panel}:null;
 }
 function enlarged(image,num){
  document.getElementById('referenceZoom')?.remove();

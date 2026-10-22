@@ -77,7 +77,9 @@ class BrowserChecks(unittest.TestCase):
         self.page.locator('#importFile').set_input_files({
             'name': 'backup.json', 'mimeType': 'application/json',
             'buffer': json.dumps(backup).encode()})
-        self.page.wait_for_function("document.querySelector('#toast').textContent.includes('imported')")
+        # The previous import's toast can still be visible while File.text() is
+        # pending. The input is cleared in finally only after this import ends.
+        self.page.wait_for_function("document.querySelector('#importFile').value === '' && document.querySelector('#toast').textContent.includes('imported')")
 
     def open_question(self, question):
         self.import_backup({'mode': 'Both', 'last': question['id']})

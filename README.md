@@ -20,6 +20,8 @@ After a successful online visit, the service worker saves the app and question t
 
 Your progress is saved per browser and is not synchronized between devices. Export it before clearing browser data.
 
+Two Topic 6 questions (Q140 and Q214) have clipped source scans and are labeled **Incomplete scan**. Skip these until complete source images are supplied; see the [source repair notes](docs/report-fixes.md#source-material-still-needed).
+
 ## Development and checks
 
 Serve the repository with `python3 -m http.server 8000`, then visit `http://localhost:8000`.
@@ -31,7 +33,7 @@ python3 scripts/update-cache.py
 node --test tests/data.test.cjs
 ```
 
-For browser regression checks, install Python Playwright (`python3 -m pip install -r requirements-dev.txt`) and Chromium (`python3 -m playwright install chromium`), then run `python3 tests/browser.py`. The tests also use an installed `chromium`, or the executable selected by `CHROMIUM_PATH`.
+For browser regression checks, install Python Playwright (`python3 -m pip install -r requirements-dev.txt`) and browsers (`python3 -m playwright install chromium firefox`). Run `python3 tests/browser.py`, `python3 tests/quiz_edge_cases.py`, and `python3 tests/offline_edge_cases.py`. Set `ECON_BROWSER=firefox` to run the base and quiz checks in Firefox. The Chromium tests also use an installed `chromium`, or the executable selected by `CHROMIUM_PATH`.
 
 The checks cover the 1,336 original IDs and answers, data cleanup, scan references, quiz and mistake review, backup import/export/reset, resume location, mobile layout, shared diagrams, and offline refresh at a project subpath. An interrupted offline download is tested before retrying and opening all 39 scan-based questions' images offline.
 

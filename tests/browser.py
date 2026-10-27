@@ -41,8 +41,10 @@ class BrowserChecks(unittest.TestCase):
         cls.thread.start()
         cls.url = f'http://127.0.0.1:{cls.server.server_port}/bank/'
         cls.playwright = sync_playwright().start()
-        executable = os.environ.get('CHROMIUM_PATH') or shutil.which('chromium')
-        cls.browser = cls.playwright.chromium.launch(executable_path=executable, args=['--no-sandbox'])
+        engine = os.environ.get('ECON_BROWSER', 'chromium')
+        executable = (os.environ.get('CHROMIUM_PATH') or shutil.which('chromium')) if engine == 'chromium' else None
+        cls.browser = getattr(cls.playwright, engine).launch(executable_path=executable,
+                                                          args=['--no-sandbox'] if engine == 'chromium' else [])
 
     @classmethod
     def tearDownClass(cls):
@@ -211,6 +213,29 @@ class BrowserChecks(unittest.TestCase):
         tab.goto(self.url)
         tab.wait_for_selector('[data-topic="1"]')
         self.assertEqual(tab.locator('.count-highlight').inner_text(), '1,336 questions available')
+
+    def test_startup_failure_has_a_retry_screen(self):
+        for filename in ['app.js', 'data.js']:
+            with self.subTest(filename=filename):
+                context = self.browser.new_context(service_workers='block')
+                page = context.new_page()
+                page.route('**/' + filename, lambda route: route.abort())
+                page.goto(self.url)
+                self.assertIn('could not be loaded', page.locator('#main').inner_text())
+                self.assertEqual(page.locator('#main a').get_attribute('href'), './')
+                context.close()
+
+    def test_small_screens_and_landscape_settings(self):
+        for width, height in [(320, 568), (375, 667), (568, 320)]:
+            with self.subTest(width=width, height=height):
+                self.page.set_viewport_size({'width': width, 'height': height})
+                self.home()
+                self.assertTrue(self.page.evaluate('document.documentElement.scrollWidth <= innerWidth'))
+                self.click('[data-action="resume"], [data-action="firstTodo"]')
+                self.assertTrue(self.page.evaluate('document.documentElement.scrollWidth <= innerWidth'))
+                self.click('#settingsBtn')
+                self.assertTrue(self.page.evaluate('document.documentElement.scrollWidth <= innerWidth'))
+                self.click('[data-action="closeModal"]')
 
 
 if __name__ == '__main__':

@@ -14,11 +14,11 @@ function current(){
 function enlarged(image,num){
  document.getElementById('referenceZoom')?.remove();
  const overlay=document.createElement('div');overlay.id='referenceZoom';overlay.className='shared-reference-zoom';
- overlay.setAttribute('role','dialog');overlay.setAttribute('aria-modal','true');
+ overlay.setAttribute('role','dialog');overlay.setAttribute('aria-modal','true');overlay.setAttribute('aria-label','Original shared question information');
  const header=document.createElement('header');const label=document.createElement('span');label.textContent='Original reference from Question '+num;
- const close=document.createElement('button');close.textContent='Close ✕';close.onclick=()=>overlay.remove();header.append(label,close);
+ const close=document.createElement('button');close.textContent='Close ✕';close.onclick=()=>window.ECON_DIALOG.close();header.append(label,close);
  const scroll=document.createElement('main');const img=document.createElement('img');img.src=image;img.alt='Original shared graph, table or information';scroll.append(img);overlay.append(header,scroll);document.body.append(overlay);
- overlay.addEventListener('keydown',e=>{if(e.key==='Escape')overlay.remove()});close.focus();
+ window.ECON_DIALOG.open(overlay,()=>overlay.remove());
 }
 function apply(){
  const item=current();if(!item){last='';return}

@@ -15,7 +15,14 @@
     <button id="brand" class="brand plain" aria-label="Go home"><span class="brand-symbol">E<span class="symbol-mark">.</span></span><span class="brand-copy">ECON<span class="brand-sub">MC PRACTICE</span></span></button>
     <div class="top-actions"><span id="offlineStatus" class="offline-tag" role="status"><i></i> ONLINE ACCESS</span><button id="settingsBtn" class="icon-button" title="Progress settings" aria-label="Progress settings"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 17h16M9 3v8M15 13v8"/></svg></button></div>
   </header>
-  <main id="main" class="main" tabindex="-1"></main>
+  <main id="main" class="main" tabindex="-1">
+    <section class="empty-state" role="status">
+      <h1 id="startupStatus">Loading the question bank…</h1>
+      <p id="startupHint">Preparing your questions and saved progress.</p>
+      <a class="secondary-btn" href="./">Retry loading</a>
+      <noscript><p>Enable JavaScript in your browser to practice questions.</p></noscript>
+    </section>
+  </main>
   <footer class="app-footer"><p>HKCEE & HKALE past-paper questions · Topics 1–9.</p><p>Answers checked against the source answer keys. Your progress stays on this device.</p></footer>
 </div>
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
@@ -23,8 +30,18 @@
 <input type="file" id="importFile" accept="application/json,.json" hidden />
 
 
-<script src="data.js" defer></script>
-<script src="app.js" defer></script>
+<script>
+// Keep a useful retry screen if a required script cannot reach the browser.
+document.addEventListener('error', event => {
+  if (!(event.target instanceof HTMLScriptElement) || !event.target.hasAttribute('data-required')) return;
+  const status = document.getElementById('startupStatus');
+  const hint = document.getElementById('startupHint');
+  if (status) status.textContent = 'The question bank could not be loaded.';
+  if (hint) hint.textContent = 'Check your connection and retry loading. Your saved progress stays on this device.';
+}, true);
+</script>
+<script src="data.js" defer data-required></script>
+<script src="app.js" defer data-required></script>
 <script src="shared-fix.js" defer></script>
 <script src="offline.js" defer></script>
 </body>

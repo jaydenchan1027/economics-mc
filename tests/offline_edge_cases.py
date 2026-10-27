@@ -24,6 +24,11 @@ class Handler(http.server.SimpleHTTPRequestHandler):
     def do_GET(self):
         cls = type(self)
         cls.hits[self.path] = cls.hits.get(self.path, 0) + 1
+        # Fixtures can change twice within one second. SimpleHTTPRequestHandler's
+        # second-resolution Last-Modified would otherwise return a false 304 for
+        # a changed worker manifest, so always serve current JavaScript bytes.
+        if self.path.endswith('.js') and 'If-Modified-Since' in self.headers:
+            del self.headers['If-Modified-Since']
         if self.path in cls.blocked:
             self.send_error(503, 'Simulated unavailable offline resource')
             return

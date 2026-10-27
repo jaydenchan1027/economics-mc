@@ -9,6 +9,7 @@ Mobile-friendly Economics past-paper question bank covering **Topics 1–9** and
 - Original scans for every question, including shared charts and tables
 - Scan-based options labeled in the section list and question card
 - Offline refresh and an optional download of every scan
+- Light study dashboard with responsive topic cards, clear progress, and readable answer feedback
 
 ## GitHub Pages
 

@@ -225,6 +225,25 @@ class BrowserChecks(unittest.TestCase):
                 self.assertEqual(page.locator('#main a').get_attribute('href'), './')
                 context.close()
 
+    def test_dashboard_progress_does_not_round_to_false_completion(self):
+        self.click('[data-action="firstTodo"]')
+        self.click('[data-answer="C"]')
+        self.home()
+        self.assertIn('<1%', self.page.locator('.overview-total').inner_text())
+        self.click('#settingsBtn')
+        self.assertIn('1 answer saved', self.page.locator('.settings-summary').inner_text())
+        self.click('[data-action="closeModal"]')
+        self.page.evaluate('''() => {
+          const records = Object.fromEntries(window.ECON_DATA.questions
+            .filter(q=>q.id!=='t2s1q1').map(q=>[q.id,{choice:q.answer}]));
+          localStorage.setItem('econ-mc-progress-v1',JSON.stringify(records));
+        }''')
+        self.page.reload()
+        self.page.wait_for_selector('[data-topic="2"]')
+        self.assertIn('99%', self.page.locator('.overview-total').inner_text())
+        self.assertIn('In progress', self.page.locator('[data-topic="2"] .progress-caption').inner_text())
+        self.assertIn('99%', self.page.locator('[data-topic="2"] .progress-caption').inner_text())
+
     def test_small_screens_and_landscape_settings(self):
         for width, height in [(320, 568), (375, 667), (568, 320)]:
             with self.subTest(width=width, height=height):

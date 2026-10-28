@@ -226,10 +226,18 @@ class BrowserChecks(unittest.TestCase):
                 context.close()
 
     def test_dashboard_progress_does_not_round_to_false_completion(self):
+        self.assertEqual(self.page.locator('.overview-message strong').inner_text(), 'Your first win')
         self.click('[data-action="firstTodo"]')
+        self.click('[data-answer="A"]')
+        self.home()
+        self.assertEqual(self.page.locator('.overview-message strong').inner_text(), 'Your first win')
+        self.click('[data-action="resume"]')
+        self.click('[data-action="clearAnswer"]')
         self.click('[data-answer="C"]')
         self.home()
-        self.assertIn('<1%', self.page.locator('.overview-total').inner_text())
+        self.assertEqual(self.page.locator('.overview-message strong').inner_text(), '10 correct answers')
+        self.assertEqual(self.page.locator('.progress-ring').get_attribute('aria-label'),
+                         '<1% of selected questions completed')
         self.click('#settingsBtn')
         self.assertIn('1 answer saved', self.page.locator('.settings-summary').inner_text())
         self.click('[data-action="closeModal"]')
@@ -240,9 +248,16 @@ class BrowserChecks(unittest.TestCase):
         }''')
         self.page.reload()
         self.page.wait_for_selector('[data-topic="2"]')
-        self.assertIn('99%', self.page.locator('.overview-total').inner_text())
+        self.assertEqual(self.page.locator('.progress-ring').get_attribute('aria-label'),
+                         '99% of selected questions completed')
         self.assertIn('In progress', self.page.locator('[data-topic="2"] .progress-caption').inner_text())
         self.assertIn('99%', self.page.locator('[data-topic="2"] .progress-caption').inner_text())
+        self.assertEqual(self.page.locator('.overview-message strong').inner_text(), '1,336 correct answers')
+        self.click('[data-topic="2"]')
+        self.assertIn('99% progress', self.page.locator('#main > .muted').inner_text())
+        self.home()
+        self.click('[data-mode="AL"]')
+        self.assertEqual(self.page.locator('.overview-message strong').inner_text(), 'Every answer correct!')
 
     def test_small_screens_and_landscape_settings(self):
         for width, height in [(320, 568), (375, 667), (568, 320)]:

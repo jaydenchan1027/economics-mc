@@ -8,22 +8,17 @@ document.head.appendChild(style);
 let last='';
 function current(){
  const panel=document.querySelector('#main .question-panel');if(!panel)return null;
- const labels=[...panel.querySelectorAll('.question-meta .tag')].map(e=>e.textContent.trim());
- const t=labels.find(v=>/^TOPIC\s+\d+/.test(v));
- const num=panel.querySelector(':scope > .kicker')?.textContent.match(/QUESTION\s+(\d+)/)?.[1];
- if(!t||!num)return null;
- const topic=Number(t.match(/TOPIC\s+(\d+)/)[1]);
- const set=/SET\s+2/.test(t)?2:1;
- const q=keys.get(topic+':'+set+':'+Number(num));return q?{q,panel}:null;
+ const q=bank.questions.find(q=>q.id===panel.dataset.questionId);
+ return q?{q,panel}:null;
 }
 function enlarged(image,num){
  document.getElementById('referenceZoom')?.remove();
  const overlay=document.createElement('div');overlay.id='referenceZoom';overlay.className='shared-reference-zoom';
- overlay.setAttribute('role','dialog');overlay.setAttribute('aria-modal','true');
+ overlay.setAttribute('role','dialog');overlay.setAttribute('aria-modal','true');overlay.setAttribute('aria-label','Original shared question information');
  const header=document.createElement('header');const label=document.createElement('span');label.textContent='Original reference from Question '+num;
- const close=document.createElement('button');close.textContent='Close ✕';close.onclick=()=>overlay.remove();header.append(label,close);
+ const close=document.createElement('button');close.textContent='Close ✕';close.onclick=()=>window.ECON_DIALOG.close();header.append(label,close);
  const scroll=document.createElement('main');const img=document.createElement('img');img.src=image;img.alt='Original shared graph, table or information';scroll.append(img);overlay.append(header,scroll);document.body.append(overlay);
- overlay.addEventListener('keydown',e=>{if(e.key==='Escape')overlay.remove()});close.focus();
+ window.ECON_DIALOG.open(overlay,()=>overlay.remove());
 }
 function apply(){
  const item=current();if(!item){last='';return}

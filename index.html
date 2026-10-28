@@ -1,44 +1,49 @@
-<!doctype html>
-<html lang="en"><head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#09131c"><title>ECON • MC Practice Bank</title>
-<style>
-html,body{margin:0;min-height:100%;background:#09131c;color:#e3eff0;font:15px system-ui}
-#startup{min-height:90vh;display:flex;align-items:center;justify-content:center;padding:1.5rem;text-align:center}
-#startup strong{display:block;font-size:1.05rem}
-#startup p{font-size:0.85rem;color:#a4b8c0}
-#startup a{display:block;margin-top:20px;color:#8bd2cc}
-</style></head><body>
-<div id="startup" role="status" aria-live="polite"><div>
-<strong>Loading Economics MC Question Bank…</strong>
-<p>Preparing all 1,336 questions for Topics 1–9.</p>
-<a href="original.html">Open the previous working version (Topics 3–9)</a>
-</div></div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#f8f7ff" />
+  <meta name="description" content="Offline Economics MC practice by topic, with instant marking and saved progress." />
+  <title>ECON • MC Practice Bank</title>
+  <link rel="stylesheet" href="app.css" />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+</head>
+<body>
+<div id="app">
+  <header class="topbar">
+    <button id="brand" class="brand plain" aria-label="Go home"><span class="brand-symbol">E<span class="symbol-mark">.</span></span><span class="brand-copy">ECON<span class="brand-sub">Small wins, big ideas</span></span></button>
+    <span class="workspace-label">LEARN. PRACTICE. LEVEL UP.</span>
+    <div class="top-actions"><span id="offlineStatus" class="offline-tag" role="status"><i></i> ONLINE ACCESS</span><button id="settingsBtn" class="icon-button" title="Progress settings" aria-label="Progress settings"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 17h16M9 3v8M15 13v8"/></svg><span>Settings</span></button></div>
+  </header>
+  <main id="main" class="main" tabindex="-1">
+    <section class="empty-state" role="status">
+      <h1 id="startupStatus">Loading the question bank…</h1>
+      <p id="startupHint">Preparing your questions and saved progress.</p>
+      <a class="secondary-btn" href="./">Retry loading</a>
+      <noscript><p>Enable JavaScript in your browser to practice questions.</p></noscript>
+    </section>
+  </main>
+  <footer class="app-footer"><p><strong>ECON</strong> · HKCEE & HKALE past-paper questions · Topics 1–9.</p><p>A little practice, every day. Your progress stays on this device.</p></footer>
+</div>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+<div id="modalRoot"></div>
+<input type="file" id="importFile" accept="application/json,.json" hidden />
+
+
 <script>
-(async function bootstrap() {
-  'use strict';
-  const fallback=document.querySelector('#startup');
-  const fail=message=>{if(!fallback)return;fallback.querySelector('strong').textContent='The question bank could not be loaded.';fallback.querySelector('p').textContent=message};
-  const abort=new AbortController();
-  const deadline=setTimeout(()=>abort.abort(),30000);
-  try {
-    const r=await fetch('original.html',{signal:abort.signal});
-    if(!r.ok)throw new Error('Website file not found ('+r.status+')');
-    let content=await r.text();
-    const marker='/* ECON — responsive, offline, zero-dependency multiple-choice practice. */';
-    if(!content.includes(marker))throw new Error('An app update changed the startup integration point');
-    const tags='<'+'/script>'+Array.from({length:17},(_,i)=>'<script src="econ12_part_'+String(i+1).padStart(2,'0')+'.js"></'+'script>').join('')+'<script src="econ12_finalize.js"></'+'script><script>';
-    content=content.replace(marker,tags+marker);
-    content=content.replace('for(const topic of [3,4,5,6,7,8,9])','for(const topic of [1,2,3,4,5,6,7,8,9])');
-    content=content.replace('>7 topics</span>','>9 topics</span>');
-    content=content.replace('</head>','<style>.q-title{white-space:pre-wrap}.context-panel>div{white-space:pre-wrap}</style></head>');
-    content=content.replace('</body>','<script src="shared-fix.js"></'+'script></body>');
-    document.open();
-    document.write(content);
-    document.close();
-  } catch(e) {
-    fail(e.name==='AbortError'?'Loading timed out. Check your connection and refresh.':e.message);
-    console.error('Economics MC startup failed:',e);
-  } finally {clearTimeout(deadline)}
-})();
-</script></body></html>
+// Keep a useful retry screen if a required script cannot reach the browser.
+document.addEventListener('error', event => {
+  if (!(event.target instanceof HTMLScriptElement) || !event.target.hasAttribute('data-required')) return;
+  const status = document.getElementById('startupStatus');
+  const hint = document.getElementById('startupHint');
+  if (status) status.textContent = 'The question bank could not be loaded.';
+  if (hint) hint.textContent = 'Check your connection and retry loading. Your saved progress stays on this device.';
+}, true);
+</script>
+<script src="data.js" defer data-required></script>
+<script src="app.js" defer data-required></script>
+<script src="shared-fix.js" defer></script>
+<script src="offline.js" defer></script>
+</body>
+</html>
